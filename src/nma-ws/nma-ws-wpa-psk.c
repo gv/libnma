@@ -230,18 +230,19 @@ constructed (GObject *object)
 	if (self->connection)
 		update_secrets (NMA_WS (self), self->connection);
 
-	gtk_widget_grab_focus (self->wpa_psk_entry);
-
 	G_OBJECT_CLASS (nma_ws_wpa_psk_parent_class)->constructed (object);
 }
 
 NMAWsWpaPsk *
 nma_ws_wpa_psk_new (NMConnection *connection, gboolean secrets_only)
 {
-	return g_object_new (NMA_TYPE_WS_WPA_PSK,
+	NMAWsWpaPsk *r = g_object_new (NMA_TYPE_WS_WPA_PSK,
 	                     "connection", connection,
 	                     "secrets-only", secrets_only,
 	                     NULL);
+	g_signal_connect_swapped(r, "map",
+		G_CALLBACK(gtk_widget_grab_focus), r->wpa_psk_entry);
+	return r;
 }
 
 static void
